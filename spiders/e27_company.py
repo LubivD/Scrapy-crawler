@@ -12,11 +12,9 @@ class E27_Spider(scrapy.Spider):
     allowed_domains = ['e27.co']
 
     def start_requests(self):
-        # profile_urls = 'https://e27.co/startups/finery-technology/'
-        # yield Request(profile_urls, self.parse_first_part)
-
         csv_file = 'e27.csv'
         amount_of_links = 250
+
         with open(csv_file, 'r') as file:
             rows = [row for row in file]
             rows_whithout_header = rows[1:]
@@ -36,7 +34,7 @@ class E27_Spider(scrapy.Spider):
         data = json.loads(response.body)
         list_of_data = data['data']
         item['id'] = list_of_data.get('id')
-        item['company_name'] = list_of_data.get('name')  # data.id
+        item['company_name'] = list_of_data.get('name')
         item['request_url'] = 'https://e27.co/startups/' + list_of_data.get('slug')
         item['request_company_url'] = list_of_data.get('metas').get('website')
         item['location'] = list_of_data.get('location')[0].get('text')

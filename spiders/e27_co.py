@@ -17,7 +17,6 @@ class E27_Spider(scrapy.Spider):
     def parse(self, response):
         data = json.loads(response.body)
         item = E27CoTechTaskItem()
-        # start = 0
         list_of_data = data['data']['list']
         total_startup_count = int(data['data']['totalstartupcount'])
 
