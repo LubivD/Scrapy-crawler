@@ -28,6 +28,14 @@ class E27_Spider(scrapy.Spider):
 
                 yield Request(start_urls, self.parse_first_part)
 
+    def remove_empty_el(self, item_with_list):
+        for el_from_list in item_with_list:
+            if el_from_list is None or el_from_list == '':
+                item_with_list.remove(el_from_list)
+        if item_with_list[0] is None:
+            item_with_list = ''
+        return item_with_list
+
     def parse_first_part(self, response):
         item = E27CoTechTaskItem()
 
@@ -39,15 +47,18 @@ class E27_Spider(scrapy.Spider):
         item['request_company_url'] = list_of_data.get('metas').get('website')
         item['location'] = list_of_data.get('location')[0].get('text')
         item['tags'] = list_of_data.get('metas').get('market')
-        item['founding_date'] = list_of_data.get('metas').get('found_month'), \
-                                list_of_data.get('metas').get('found_year')
+        founding_date = [list_of_data.get('metas').get('found_month'),
+                         list_of_data.get('metas').get('found_year')]
+        item['founding_date'] = self.remove_empty_el(founding_date)
         item['founders'] = ''
         item['employee_range'] = ''
-        item['urls'] = list_of_data.get('metas').get('facebook'), \
-                       list_of_data.get('metas').get('linkedin'), \
-                       list_of_data.get('metas').get('twitter')
+        urls = [list_of_data.get('metas').get('facebook'),
+                list_of_data.get('metas').get('linkedin'),
+                list_of_data.get('metas').get('twitter')]
+        item['urls'] = self.remove_empty_el(urls)
         item['emails'] = ''
         item['phones'] = ''
         item['description_short'] = list_of_data.get('metas').get('short_description')
         item['description'] = list_of_data.get('metas').get('description')
+
         yield item
